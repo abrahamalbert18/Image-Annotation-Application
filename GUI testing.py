@@ -17,6 +17,10 @@ app = tk.Tk()
 app.title("Image Annotation Application")
 app.configure(background="snow")
 
+workingDirectory = os.getcwd()
+imagesList = []
+tkImage = None
+currentImageIndex = 0
 
 def saveFileFirstTime():
     '''
@@ -43,29 +47,60 @@ def backupFile():
     pass
 
 
-def loadImages():
+def loadImage():
     """
     This function is used to load images from the directory.
     """
+    global workingDirectory, imagesList, currentImageIndex
     workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
-    return imagesList
-
-imagesList = loadImages()
-firstImage = 0
-currentImage = 0
-lastImage = len(imagesList)
-
-def loadNextImage():      
-    img = imagesList[currentImage]
-    img = ImageTk.PhotoImage(Image.open("True1.gif"))
-    imageLabel = ttk.Label(app, image = img)
-    imageLabel.grid(column=2, row = 5, columnspan = 6)
+    currentImageIndex = 0
     pass
 
 
+# def firstImage():
+#     img = imagesList[currentImageIndex]
+#     print(img)
+#     imgPath = workingDirectory+"/"+img
+#     img = Image.open(imgPath)
+#     tkImage = ImageTk.PhotoImage(img)
+#     imageLabel = tk.Label(app, image = tkImage)
+#     imageLabel.pack()    
 
 
+
+def loadNextImage():      
+    global currentImageIndex, tkImage
+    print(currentImageIndex)
+    img = imagesList[currentImageIndex]
+    currentImageIndex += 1
+    print(img)
+    imgPath = workingDirectory+"/"+img
+    img = Image.open(imgPath)
+    img = img.resize((800, 600), Image.ANTIALIAS)
+    tkImage = ImageTk.PhotoImage(img)
+    imageLabel = ttk.Label(app, image = tkImage)
+    imageLabel.grid(row = 4, column =0, columnspan = 4)
+    if currentImageIndex == len(imagesList):
+         mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
+    pass
+
+
+def loadPrevImage():      
+    global currentImageIndex, tkImage
+    currentImageIndex -= 1
+    print(currentImageIndex)
+    img = imagesList[currentImageIndex]
+    print(img)
+    imgPath = workingDirectory+"/"+img
+    img = Image.open(imgPath)
+    img = img.resize((800, 600), Image.ANTIALIAS)
+    tkImage = ImageTk.PhotoImage(img)
+    imageLabel = ttk.Label(app, image = tkImage)
+    imageLabel.grid(row = 4, column =0, columnspan = 4)
+    if currentImageIndex == 0:
+         mBox.showwarning("Warning", "Cannot go to previous image. This is the first image in the folder.")
+    pass
 
 def save():
     backupFile()
@@ -80,7 +115,9 @@ def saveLabel():
         if label == 0: app.configure(background="light goldenrod")
         elif label == 1: app.configure(background="brown4")
         else : app.configure(background="steel blue")
-        file.writelines("\n"+str(label))
+        imageName = imagesList[currentImageIndex]
+        
+        file.writelines("\n"+imageName+","+str(label))
         save()
     pass
                 
@@ -90,9 +127,10 @@ def _messageBox():
     
 def about():
     mBox.showinfo("About","This application is purely created for image annotations. @Albert")
+
 #Creating a label frame for dynamic control of GUI 
-lFrame = ttk.LabelFrame(app, text = "Image Labelling")
-lFrame.grid(column = 0, row = 0, sticky = "W")
+# lFrame = ttk.LabelFrame(app, text = "Image Labelling")
+# lFrame.grid(column = 0, row = 0, sticky = "W")
 #Labels
 label = ttk.Label(app,text="Please enter the path: ")
 label.grid(column=0, row=0, sticky = "W")
@@ -102,15 +140,15 @@ classLabel = ttk.Label(app,text="Class Labels: ")
 classLabel.grid(column=0, row=3, sticky = "W")
 
 #Defining a Button Click event
-def clickMe():
-    action.configure(text="I've been clicked.")
-    label.configure(foreground="red")
-    label.configure(text="I'm a red label")
-    pass
+# def clickMe():
+#     action.configure(text="I've been clicked.")
+#     label.configure(foreground="red")
+#     label.configure(text="I'm a red label")
+#     pass
     
-def textBoxClick():
-    action.configure(text="Hi "+ text.get()+ "!")    
-    pass
+# def textBoxClick():
+#     action.configure(text="Hi "+ text.get()+ "!")    
+#     pass
 
 def _exitGUI():
     """
@@ -126,21 +164,20 @@ textEntered.grid(column=1,row=0)
 
     
 #Adding a button
-action = ttk.Button(app, text="Click Me!", command = textBoxClick)
-action.grid(column=1, row = 4,padx = 4, pady = 4)
+# action = ttk.Button(app, text="Click Me!", command = textBoxClick)
+# action.grid(column=1, row = 4,padx = 4, pady = 4)
 
 
 #Adding open button
-actionOpen = ttk.Button(app, text="Open Folder", command = loadImages)
+actionOpen = ttk.Button(app, text="Open Folder", command = loadImage)
 actionOpen.grid(column=2,row =0)
 
 #Adding next button
-actionNext = ttk.Button(app, text="Next Image",command=loadNextImage)
-actionNext.grid(column=2,row =10)
-
+actionNext = ttk.Button(app, text="Next Image", command=loadNextImage)
+actionNext.grid(column =2 , row = 10)
 
 #Adding prev button
-actionPrev = ttk.Button(app, text="Previous Image",)
+actionPrev = ttk.Button(app, text="Previous Image", command = loadPrevImage)
 actionPrev.grid(column=0,row =10)
 
 #Adding save label button
