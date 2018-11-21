@@ -89,7 +89,7 @@ def loadNextImage():
     print(img)
     imgPath = workingDirectory+"/"+img
     img = Image.open(imgPath)
-    img = img.resize((800, 800), Image.ANTIALIAS)
+    img = img.resize((850, 650), Image.ANTIALIAS)
     tkImage = ImageTk.PhotoImage(img)
     imageLabel = ttk.Label(app, image = tkImage)
     imageLabel.grid(row = 4, column =0, columnspan = 4)
@@ -108,7 +108,7 @@ def loadPrevImage():
     print(img)
     imgPath = workingDirectory+"/"+img
     img = Image.open(imgPath)
-    img = img.resize((800, 800), Image.ANTIALIAS)
+    img = img.resize((850, 650), Image.ANTIALIAS)
     tkImage = ImageTk.PhotoImage(img)
     imageLabel = ttk.Label(app, image = tkImage)
     imageLabel.grid(row = 4, column =0, columnspan = 4)
@@ -157,7 +157,7 @@ def about():
 # lFrame = ttk.LabelFrame(app, text = "Image Labelling")
 # lFrame.grid(column = 0, row = 0, sticky = "W")
 #Labels
-label = ttk.Label(app,text="Please open the folder: ")
+label = ttk.Label(app,text="Open Folder")
 label.grid(column=0, row=0, sticky = "W")
 label.config(font=("Tahoma","20"))
 #Class Labels
@@ -202,17 +202,17 @@ def _exitGUI():
 
 #Adding open button
 actionOpen = tk.Button(app, text="Open Folder", bg = "snow4", command = loadImage)
-actionOpen.grid(column=1,row =0)
+actionOpen.grid(column=0,row =1, sticky= tk.W)
 actionOpen.config(font= ("Tahoma",16))
 
 #Adding next button
 actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "snow4")
-actionNext.grid(column =2 , row = 10, sticky=tk.E)
+actionNext.grid(column =2 , row = 10, sticky=tk.W)
 actionNext.config(font= ("Tahoma",16))
 
 #Adding prev button
 actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "snow4")
-actionPrev.grid(column=0,row =10,sticky=tk.W)
+actionPrev.grid(column=0,row =10,sticky=tk.E)
 actionPrev.config(font= ("Tahoma",16))
 
 #Adding save label button
