@@ -1,2 +1,0 @@
-﻿manual_finger
-engine_finger
