@@ -16,7 +16,8 @@ from shutil import copyfile
 app = tk.Tk()
 app.geometry("900x900")
 app.title("Image Annotation Application")
-app.configure(background="cyan4")
+background = "cyan4"
+app.configure(background=background)
 
 workingDirectory = os.getcwd()
 imagesList = []
@@ -81,7 +82,10 @@ def loadImage():
 
 
 
-def loadNextImage():      
+def loadNextImage():    
+    """
+    Loads the next image in the GUI.
+    """
     global currentImageIndex, tkImage
     print(currentImageIndex)
     img = imagesList[currentImageIndex]
@@ -101,6 +105,9 @@ def loadNextImage():
 
 
 def loadPrevImage():      
+    """
+    Loads the previous image in the GUI.
+    """
     global currentImageIndex, tkImage
     currentImageIndex -= 1
     print(currentImageIndex)
@@ -117,6 +124,9 @@ def loadPrevImage():
     pass
 
 def save():
+    """
+    Saves a backup file in backup directory.
+    """
     backupFile()
     
 def saveLabel():
@@ -124,12 +134,18 @@ def saveLabel():
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
     labels = ["beer","wine","other"]
-    global globalIndex
+    global globalIndex, background
     with open("DrinkingDataLabels.csv","a") as file:
         label = radioLabel.get()
-        if label == 0: app.configure(background="light goldenrod")
-        elif label == 1: app.configure(background="brown4")
-        else : app.configure(background="steel blue")
+        if label == 0: 
+            background="light goldenrod"
+            app.configure(background=background)
+        elif label == 1: 
+            background="brown4"
+            app.configure(background=background)
+        else : 
+            background="steel blue"
+            app.configure(background=background)
         imageName = imagesList[currentImageIndex]
         
         file.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
@@ -138,7 +154,9 @@ def saveLabel():
     pass
                 
 def _messageBox():
-    
+    """
+    Displays a message box with instructions.
+    """
     mBox._show("Help","By default an image is displayed for layout purpose.\
                   Instructions: \n1. Open the folder with all the images. \
                                 \n2. Press next image.\
@@ -148,22 +166,32 @@ def _messageBox():
     pass
 
 def _saveMessage():
+    """
+    Displays a small message box
+    """
     mBox.showinfo("Save", "Saved Successfully. Have a good time :)")    
         
 def about():
-    mBox.showinfo("About","This is a very basic application created for labelling images. @Albert")
+    """
+    Displays a small message box with details about.
+    """
+    mBox.showinfo("About","This is a very basic application created for labelling images. @2018")
 
 #Creating a label frame for dynamic control of GUI 
 # lFrame = ttk.LabelFrame(app, text = "Image Labelling")
 # lFrame.grid(column = 0, row = 0, sticky = "W")
+
 #Labels
 label = ttk.Label(app,text="Open Folder")
 label.grid(column=0, row=0, sticky = "W")
-label.config(font=("Tahoma","20"))
+label.config(font=("Tahoma","20", "bold"))
+label.configure(background = background)
+
 #Class Labels
 classLabel = ttk.Label(app,text="Class Labels: ")
 classLabel.grid(column=0, row=5, sticky = "W")
-classLabel.config(font=("Tahoma","20"))
+classLabel.config(font=("Tahoma","20", "bold"))
+classLabel.configure(background = background)
 
 imgPath = "./IMG_0305.JPG"
 img = Image.open(imgPath)
@@ -201,22 +229,22 @@ def _exitGUI():
 
 
 #Adding open button
-actionOpen = tk.Button(app, text="Open Folder", bg = "snow4", command = loadImage)
+actionOpen = tk.Button(app, text="Open Folder", bg = "deepskyblue4", command = loadImage)
 actionOpen.grid(column=0,row =1, sticky= tk.W)
 actionOpen.config(font= ("Tahoma",16))
 
 #Adding next button
-actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "snow4")
+actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "deepskyblue4")
 actionNext.grid(column =2 , row = 10, sticky=tk.W)
 actionNext.config(font= ("Tahoma",16))
 
 #Adding prev button
-actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "snow4")
+actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "deepskyblue4")
 actionPrev.grid(column=0,row =10,sticky=tk.E)
 actionPrev.config(font= ("Tahoma",16))
 
 #Adding save label button
-actionSaveLabel = tk.Button(app, text="Save Label", command =_saveMessage, bg = "snow4")
+actionSaveLabel = tk.Button(app, text="Save Label", command =_saveMessage, bg = "deepskyblue4")
 actionSaveLabel.grid(column=1,row =12)
 actionSaveLabel.config(font= ("Tahoma",16))
 
@@ -227,15 +255,17 @@ radioLabel.set(99)
 radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "Beer", value = 0, command = saveLabel)
 radioLabel1.grid(column=1, row = 5)
 radioLabel1.config(font=("Tahoma",16))
+radioLabel1.configure(background = background)
 
 radioLabel2 = tk.Radiobutton(app, variable = radioLabel, text = "Wine", value = 1, command = saveLabel)
 radioLabel2.grid(column=2, row = 5)
 radioLabel2.config(font=("Tahoma",16))
+radioLabel2.configure(background = background)
 
 radioLabel3 = tk.Radiobutton(app, variable = radioLabel, text = "Others", value = 2, command = saveLabel)
 radioLabel3.grid(column=3, row = 5)
 radioLabel3.config(font=("Tahoma",16))
-
+radioLabel3.configure(background = background)
 # #Creating a scrolled text
 # scrolHeight = 4
 # scrolWidth = 40
