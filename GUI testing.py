@@ -7,7 +7,7 @@ Created on Tue Nov 20 09:37:49 2018
 import os
 import numpy as np
 from PIL import Image, ImageTk
-
+import pandas as pd
 import tkinter as tk
 from tkinter import ttk, scrolledtext, Menu, messagebox as mBox, filedialog as fd
 from shutil import copyfile
@@ -15,12 +15,23 @@ from shutil import copyfile
 #Initialising and title of the app.
 app = tk.Tk()
 app.title("Image Annotation Application")
-app.configure(background="snow")
+app.configure(background="cyan4")
 
 workingDirectory = os.getcwd()
 imagesList = []
 tkImage = None
 currentImageIndex = 0
+df = pd.read_csv("DrinkingDataLabels.csv")
+
+try:
+    df = df[df['label'] != 99]
+except:
+    pass
+
+try:
+    globalIndex = df.count()['originalFileName']
+except:
+    globalIndex = 1
 
 def saveFileFirstTime():
     '''
@@ -73,7 +84,7 @@ def loadNextImage():
     global currentImageIndex, tkImage
     print(currentImageIndex)
     img = imagesList[currentImageIndex]
-    currentImageIndex += 1
+    
     print(img)
     imgPath = workingDirectory+"/"+img
     img = Image.open(imgPath)
@@ -81,7 +92,9 @@ def loadNextImage():
     tkImage = ImageTk.PhotoImage(img)
     imageLabel = ttk.Label(app, image = tkImage)
     imageLabel.grid(row = 4, column =0, columnspan = 4)
-    if currentImageIndex == len(imagesList):
+    saveLabel()
+    currentImageIndex += 1
+    if currentImageIndex >= len(imagesList):
          mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
     pass
 
@@ -98,8 +111,8 @@ def loadPrevImage():
     tkImage = ImageTk.PhotoImage(img)
     imageLabel = ttk.Label(app, image = tkImage)
     imageLabel.grid(row = 4, column =0, columnspan = 4)
-    if currentImageIndex == 0:
-         mBox.showwarning("Warning", "Cannot go to previous image. This is the first image in the folder.")
+    if currentImageIndex <= 0:
+         mBox.showwarning("Warning", "Cannot load previous image. This is the first image in the folder. Please try next image.")
     pass
 
 def save():
@@ -110,6 +123,7 @@ def saveLabel():
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
     labels = ["beer","wine","other"]
+    global globalIndex
     with open("DrinkingDataLabels.csv","a") as file:
         label = radioLabel.get()
         if label == 0: app.configure(background="light goldenrod")
@@ -117,14 +131,17 @@ def saveLabel():
         else : app.configure(background="steel blue")
         imageName = imagesList[currentImageIndex]
         
-        file.writelines("\n"+imageName+","+str(label))
+        file.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
+        globalIndex += 1
         save()
     pass
                 
 def _messageBox():
     mBox.showinfo("Help","Please specify valid directory to load all the images.")
     pass
-    
+
+def _saveMessage():
+    mBox.showinfo("Save", "Saved Successfully. Have a good time :)")    
 def about():
     mBox.showinfo("About","This application is purely created for image annotations. @Albert")
 
@@ -169,19 +186,19 @@ textEntered.grid(column=1,row=0)
 
 
 #Adding open button
-actionOpen = ttk.Button(app, text="Open Folder", command = loadImage)
+actionOpen = tk.Button(app, text="Open Folder", bg = "snow4", command = loadImage)
 actionOpen.grid(column=2,row =0)
 
 #Adding next button
-actionNext = ttk.Button(app, text="Next Image", command=loadNextImage)
+actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "snow4")
 actionNext.grid(column =2 , row = 10)
 
 #Adding prev button
-actionPrev = ttk.Button(app, text="Previous Image", command = loadPrevImage)
+actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "snow4")
 actionPrev.grid(column=0,row =10)
 
 #Adding save label button
-actionSaveLabel = ttk.Button(app, text="Save Label")
+actionSaveLabel = tk.Button(app, text="Save Label", command =_saveMessage, bg = "snow4")
 actionSaveLabel.grid(column=1,row =12)
 
 
