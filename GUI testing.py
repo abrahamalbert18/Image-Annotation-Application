@@ -6,10 +6,10 @@ Created on Tue Nov 20 09:37:49 2018
 """
 import os
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageTk
 
 import tkinter as tk
-from tkinter import ttk, scrolledtext, Menu
+from tkinter import ttk, scrolledtext, Menu, messagebox as mBox, filedialog as fd
 from shutil import copyfile
 
 #Initialising and title of the app.
@@ -42,14 +42,30 @@ def backupFile():
         copyfile("./DrinkingDataLabels.csv", "./backup/DrinkingDataLabelsBackup.csv")
     pass
 
+
 def loadImages():
     """
     This function is used to load images from the directory.
     """
-    workingDirectory = os.getcwd()
+    workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
-    
+    return imagesList
+
+imagesList = loadImages()
+firstImage = 0
+currentImage = 0
+lastImage = len(imagesList)
+
+def loadNextImage():      
+    img = imagesList[currentImage]
+    img = ImageTk.PhotoImage(Image.open("True1.gif"))
+    imageLabel = ttk.Label(app, image = img)
+    imageLabel.grid(column=2, row = 5, columnspan = 6)
     pass
+
+
+
+
 
 def save():
     backupFile()
@@ -68,7 +84,12 @@ def saveLabel():
         save()
     pass
                 
-
+def _messageBox():
+    mBox.showinfo("Help","Please specify valid directory to load all the images.")
+    pass
+    
+def about():
+    mBox.showinfo("About","This application is purely created for image annotations. @Albert")
 #Creating a label frame for dynamic control of GUI 
 lFrame = ttk.LabelFrame(app, text = "Image Labelling")
 lFrame.grid(column = 0, row = 0, sticky = "W")
@@ -91,7 +112,7 @@ def textBoxClick():
     action.configure(text="Hi "+ text.get()+ "!")    
     pass
 
-def exitGUI():
+def _exitGUI():
     """
     Exit GUI cleanly.
     """
@@ -110,11 +131,11 @@ action.grid(column=1, row = 4,padx = 4, pady = 4)
 
 
 #Adding open button
-actionOpen = ttk.Button(app, text="Open Folder",)
+actionOpen = ttk.Button(app, text="Open Folder", command = loadImages)
 actionOpen.grid(column=2,row =0)
 
 #Adding next button
-actionNext = ttk.Button(app, text="Next Image",)
+actionNext = ttk.Button(app, text="Next Image",command=loadNextImage)
 actionNext.grid(column=2,row =10)
 
 
@@ -156,14 +177,17 @@ app.configure(menu = menuBar)
 fileMenu = Menu(menuBar, tearoff = 0)
 fileMenu.add_command(label="Save",command = save)
 fileMenu.add_separator()
-fileMenu.add_command(label="Exit", command = exitGUI)
+fileMenu.add_command(label="Exit", command = _exitGUI)
 menuBar.add_cascade(label="File", menu=fileMenu)
 
 
 #Adding help menu items
 helpMenu = Menu(menuBar, tearoff = 0)
-helpMenu.add_command(label="Help")
+helpMenu.add_command(label="Help", command= _messageBox)
+helpMenu.add_command(label="About", command = about)
 menuBar.add_cascade(label="Help", menu= helpMenu)
+
+
 
 #Placing the cursor
 textEntered.focus()
