@@ -50,6 +50,9 @@ def loadImages():
     imagesList = os.listdir(workingDirectory)
     
     pass
+
+def save():
+    backupFile()
     
 def saveLabel():
     '''
@@ -62,7 +65,7 @@ def saveLabel():
         elif label == 1: app.configure(background="brown4")
         else : app.configure(background="steel blue")
         file.writelines("\n"+str(label))
-        backupFile()
+        save()
     pass
                 
 
@@ -70,11 +73,11 @@ def saveLabel():
 lFrame = ttk.LabelFrame(app, text = "Image Labelling")
 lFrame.grid(column = 0, row = 0, sticky = "W")
 #Labels
-label = ttk.Label(lFrame,text="Please enter the path: ")
+label = ttk.Label(app,text="Please enter the path: ")
 label.grid(column=0, row=0, sticky = "W")
 
 #Class Labels
-classLabel = ttk.Label(lFrame,text="Class Labels: ")
+classLabel = ttk.Label(app,text="Class Labels: ")
 classLabel.grid(column=0, row=3, sticky = "W")
 
 #Defining a Button Click event
@@ -82,10 +85,18 @@ def clickMe():
     action.configure(text="I've been clicked.")
     label.configure(foreground="red")
     label.configure(text="I'm a red label")
+    pass
     
 def textBoxClick():
     action.configure(text="Hi "+ text.get()+ "!")    
+    pass
 
+def exitGUI():
+    """
+    Exit GUI cleanly.
+    """
+    app.quit()
+    app.destroy()
 
 #Creating a textbox
 text = tk.StringVar()
@@ -112,7 +123,7 @@ actionPrev = ttk.Button(app, text="Previous Image",)
 actionPrev.grid(column=0,row =10)
 
 #Adding save label button
-actionSaveLabel = ttk.Button(app, text="Save Label", command = saveLabel)
+actionSaveLabel = ttk.Button(app, text="Save Label")
 actionSaveLabel.grid(column=1,row =12)
 
 
@@ -138,7 +149,21 @@ radioLabel3.grid(column=3, row = 3)
 # scroll.grid(column = 0, row = 20, padx = 40, pady =60)
 
 #Creating a menu bar
+menuBar = Menu(app)
+app.configure(menu = menuBar)
 
+#Adding file menu items
+fileMenu = Menu(menuBar, tearoff = 0)
+fileMenu.add_command(label="Save",command = save)
+fileMenu.add_separator()
+fileMenu.add_command(label="Exit", command = exitGUI)
+menuBar.add_cascade(label="File", menu=fileMenu)
+
+
+#Adding help menu items
+helpMenu = Menu(menuBar, tearoff = 0)
+helpMenu.add_command(label="Help")
+menuBar.add_cascade(label="Help", menu= helpMenu)
 
 #Placing the cursor
 textEntered.focus()
