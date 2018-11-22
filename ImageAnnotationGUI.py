@@ -183,7 +183,7 @@ def _messageShorcut(event=None):
                             \n 3. e, n, <Right>, <Up> --> Next image\
                             \n 4. s --> Shortcuts\
                             \n 5. h --> Help\
-                            \n 6. x --> Save and Exit.o")
+                            \n 6. x --> Save and Exit.")
     pass
 
 def _saveMessage():
@@ -251,22 +251,22 @@ def _exitGUI(event=None):
 
 
 #Adding open button
-actionOpen = tk.Button(app, text="Open Folder", bg = "deepskyblue4", command = loadImage)
+actionOpen = tk.Button(app, text="Open Folder", bg = "peach puff", command = loadImage)
 actionOpen.grid(column=0,row =1, sticky= tk.W)
 actionOpen.config(font= ("Tahoma",16))
 
 #Adding next button
-actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "deepskyblue4")
+actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "peach puff")
 actionNext.grid(column =2 , row = 10, sticky=tk.W)
 actionNext.config(font= ("Tahoma",16))
 
 #Adding prev button
-actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "deepskyblue4")
+actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "peach puff")
 actionPrev.grid(column=0,row =10,sticky=tk.E)
 actionPrev.config(font= ("Tahoma",16))
 
 #Adding save label button
-actionSaveLabel = tk.Button(app, text="Save Label", command =_saveMessage, bg = "deepskyblue4")
+actionSaveLabel = tk.Button(app, text="Save Label", command =_saveMessage, bg = "peach puff")
 actionSaveLabel.grid(column=1,row =12)
 actionSaveLabel.config(font= ("Tahoma",16))
 
@@ -334,5 +334,6 @@ app.bind("w",loadPrevImage)
 app.bind("<Up>",loadNextImage)
 app.bind("<Down>",loadPrevImage)
 
+# app.option_add('*show.msg.font', 'Calibri -24')
 #run the window
 app.mainloop()
