@@ -86,23 +86,27 @@ def loadNextImage(event=None):
     """
     Loads the next image in the GUI.
     """
-    global currentImageIndex, tkImage
-    print(currentImageIndex)
-    img = imagesList[currentImageIndex]
-    
-    print(img)
-    imgPath = workingDirectory+"/"+img
-    img = Image.open(imgPath)
-    img = img.resize((850, 550), Image.ANTIALIAS)
-    tkImage = ImageTk.PhotoImage(img)
-    imageLabel = ttk.Label(app, image = tkImage)
-    imageLabel.grid(row = 4, column =0, columnspan = 4)
-    saveLabel()
-    currentImageIndex += 1
-    if currentImageIndex >= len(imagesList):
-         mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
-    pass
-
+    try:    
+        global currentImageIndex, tkImage
+        print(currentImageIndex)
+        if currentImageIndex == 0:
+            currentImageIndex = 0        
+        currentImageIndex += 1 
+        img = imagesList[currentImageIndex]    
+        print(img)
+        imgPath = workingDirectory+"/"+img
+        img = Image.open(imgPath)
+        img = img.resize((850, 550), Image.ANTIALIAS)
+        tkImage = ImageTk.PhotoImage(img)
+        imageLabel = ttk.Label(app, image = tkImage)
+        imageLabel.grid(row = 4, column =0, columnspan = 4)
+        saveLabel()
+        if currentImageIndex >= len(imagesList):
+             mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
+        pass
+    except OSError:
+        imagesList.pop(currentImageIndex)
+        os.remove(imgPath)
 
 def loadPrevImage(event=None):      
     """
@@ -114,15 +118,20 @@ def loadPrevImage(event=None):
     img = imagesList[currentImageIndex]
     print(img)
     imgPath = workingDirectory+"/"+img
-    img = Image.open(imgPath)
-    img = img.resize((850, 550), Image.ANTIALIAS)
-    tkImage = ImageTk.PhotoImage(img)
-    imageLabel = ttk.Label(app, image = tkImage)
-    imageLabel.grid(row = 4, column =0, columnspan = 4)
-    if currentImageIndex <= 0:
-         mBox.showwarning("Warning", "Cannot load previous image. This is the first image in the folder. Please try next image.")
-    pass
-
+    try:
+        img = Image.open(imgPath)
+        img = img.resize((850, 550), Image.ANTIALIAS)
+        tkImage = ImageTk.PhotoImage(img)
+        imageLabel = ttk.Label(app, image = tkImage)
+        imageLabel.grid(row = 4, column =0, columnspan = 4)
+        if currentImageIndex <= 0:
+             mBox.showwarning("Warning", "Cannot load previous image. This is the first image in the folder. Please try next image.")
+        pass
+    except OSError:
+        imagesList.pop(currentImageIndex)
+        os.remove(imgPath)
+        # currentImageIndex -= 1
+    
 def save(event=None):
     """
     Saves a backup file in backup directory.
@@ -133,7 +142,6 @@ def saveLabel(event=None):
     '''
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
-    labels = ["beer","wine","other"]
     global globalIndex, background
     with open("DrinkingDataLabels.csv","a") as file:
         label = radioLabel.get()
@@ -163,6 +171,19 @@ def _messageBox(event=None):
                                 \n3. Select the class label either beer or wine or other.\
                                 \n4. Continue untill the last image in the folder.\
                                 \n5. Press save button before you exit.")
+    pass
+
+def _messageShorcut(event=None):
+    """
+    Displays a message box with instructions.
+    """
+    mBox._show("Shortcuts","These simple keyboard shortcuts should reduce the mouse usage.\
+                            \n 1. o --> open folder \
+                            \n 2. w, p, <Left>, <Down> --> Previous image\
+                            \n 3. e, n, <Right>, <Up> --> Next image\
+                            \n 4. s --> Shortcuts\
+                            \n 5. h --> Help\
+                            \n 6. x --> Save and Exit.o")
     pass
 
 def _saveMessage():
@@ -300,7 +321,7 @@ menuBar.add_cascade(label="Help", menu= helpMenu)
 #Adding Primary keyboard shortcuts
 app.bind("n",loadNextImage)
 app.bind("p",loadPrevImage)
-app.bind("s",save)
+app.bind("s",_messageShorcut)
 app.bind("h",_messageBox)
 app.bind("x",_exitGUI)
 app.bind("o",loadImage)
