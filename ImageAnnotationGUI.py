@@ -14,7 +14,7 @@ from shutil import copyfile
 
 #Initialising and title of the app.
 app = tk.Tk()
-app.geometry("900x900")
+app.geometry("900x800")
 app.title("Image Annotation Application")
 background = "cyan4"
 app.configure(background=background)
@@ -60,7 +60,7 @@ def backupFile():
     pass
 
 
-def loadImage():
+def loadImage(event=None):
     """
     This function is used to load images from the directory.
     """
@@ -82,7 +82,7 @@ def loadImage():
 
 
 
-def loadNextImage():    
+def loadNextImage(event=None):    
     """
     Loads the next image in the GUI.
     """
@@ -93,7 +93,7 @@ def loadNextImage():
     print(img)
     imgPath = workingDirectory+"/"+img
     img = Image.open(imgPath)
-    img = img.resize((850, 650), Image.ANTIALIAS)
+    img = img.resize((850, 550), Image.ANTIALIAS)
     tkImage = ImageTk.PhotoImage(img)
     imageLabel = ttk.Label(app, image = tkImage)
     imageLabel.grid(row = 4, column =0, columnspan = 4)
@@ -104,7 +104,7 @@ def loadNextImage():
     pass
 
 
-def loadPrevImage():      
+def loadPrevImage(event=None):      
     """
     Loads the previous image in the GUI.
     """
@@ -115,7 +115,7 @@ def loadPrevImage():
     print(img)
     imgPath = workingDirectory+"/"+img
     img = Image.open(imgPath)
-    img = img.resize((850, 650), Image.ANTIALIAS)
+    img = img.resize((850, 550), Image.ANTIALIAS)
     tkImage = ImageTk.PhotoImage(img)
     imageLabel = ttk.Label(app, image = tkImage)
     imageLabel.grid(row = 4, column =0, columnspan = 4)
@@ -123,13 +123,13 @@ def loadPrevImage():
          mBox.showwarning("Warning", "Cannot load previous image. This is the first image in the folder. Please try next image.")
     pass
 
-def save():
+def save(event=None):
     """
     Saves a backup file in backup directory.
     """
     backupFile()
     
-def saveLabel():
+def saveLabel(event=None):
     '''
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
@@ -153,7 +153,7 @@ def saveLabel():
         save()
     pass
                 
-def _messageBox():
+def _messageBox(event=None):
     """
     Displays a message box with instructions.
     """
@@ -195,10 +195,10 @@ classLabel.configure(background = background)
 
 imgPath = "./IMG_0305.JPG"
 img = Image.open(imgPath)
-img = img.resize((850, 650), Image.ANTIALIAS)
+img = img.resize((850, 550), Image.ANTIALIAS)
 tkImage = ImageTk.PhotoImage(img)
 imageLabel = ttk.Label(app, image = tkImage)
-imageLabel.grid(row = 4, column =0, columnspan = 4)
+imageLabel.grid(row = 4, column = 0, columnspan = 4)
 #Defining a Button Click event
 # def clickMe():
 #     action.configure(text="I've been clicked.")
@@ -210,10 +210,11 @@ imageLabel.grid(row = 4, column =0, columnspan = 4)
 #     action.configure(text="Hi "+ text.get()+ "!")    
 #     pass
 
-def _exitGUI():
+def _exitGUI(event=None):
     """
     Exit GUI cleanly.
     """
+    _saveMessage()
     app.quit()
     app.destroy()
 
@@ -295,6 +296,22 @@ menuBar.add_cascade(label="Help", menu= helpMenu)
 
 #Placing the cursor
 # textEntered.focus()
+
+#Adding Primary keyboard shortcuts
+app.bind("n",loadNextImage)
+app.bind("p",loadPrevImage)
+app.bind("s",save)
+app.bind("h",_messageBox)
+app.bind("x",_exitGUI)
+app.bind("o",loadImage)
+
+#Adding Secondary keyboard shortcuts
+app.bind("<Right>",loadNextImage)
+app.bind("<Left>",loadPrevImage)
+app.bind("e",loadNextImage)
+app.bind("w",loadPrevImage)
+app.bind("<Up>",loadNextImage)
+app.bind("<Down>",loadPrevImage)
 
 #run the window
 app.mainloop()
