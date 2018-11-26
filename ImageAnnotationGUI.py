@@ -71,11 +71,11 @@ def loadImage(event=None):
     try:
         os.mkdir(workingDirectory+"/beer")
         os.mkdir(workingDirectory+"/wine")
-        os.mkdir(workingDirectory+"/others")
+        os.mkdir(workingDirectory+"/other")
     except FileExistsError:
         imagesList.remove("beer")
         imagesList.remove("wine")
-        imagesList.remove("others")
+        imagesList.remove("other")
         
     
     currentImageIndex = 0
@@ -147,6 +147,28 @@ def save(event=None):
     """
     Saves a backup file in backup directory.
     """
+    df = pd.read_csv("DrinkingDataLabels.csv")
+
+    beerDir = workingDirectory+"/beer/"
+    wineDir = workingDirectory+"/wine/"
+    otherDir = workingDirectory+"/other/"
+    
+    df[df['label'] != 99]
+    df.drop_duplicates(subset="originalFileName", keep='last', inplace=True)
+    indices = df.index.get_values()
+    print("Saving file.")
+    for e,i in enumerate(indices):
+        print(e)
+        imageName = df['originalFileName'].loc[i]
+        print(imageName)
+        # gIndex = df['globalIndex'].loc[i]
+        if df['label'].loc[i] == 0:
+            copyfile(workingDirectory+"/"+imageName, beerDir+str(e)+".jpg")
+        elif df['label'].loc[i] == 1:
+            copyfile(workingDirectory+"/"+imageName, wineDir+str(e)+".jpg")
+        else:
+            copyfile(workingDirectory+"/"+imageName, otherDir+str(e)+".jpg")
+    
     backupFile()
     
     
@@ -155,9 +177,7 @@ def saveLabel(event=None):
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
     global globalIndex, background
-    # beerDir = workingDirectory+"/beer"
-    # wineDir = workingDirectory+"/wine"
-    # otherDir = workingDirectory+"/other"
+    
     with open("DrinkingDataLabels.csv","a") as file:
         label = radioLabel.get()
         imageName = imagesList[currentImageIndex]
@@ -165,20 +185,20 @@ def saveLabel(event=None):
         if label == 0: 
             background="light goldenrod"
             app.configure(background=background)
-            copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
+            # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
             
         elif label == 1: 
             background="brown4"
             app.configure(background=background)
-            copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+            # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
         else : 
             background="steel blue"
             app.configure(background=background)
-            copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
+            # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
             
         file.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
         globalIndex += 1
-        save()
+        # save()
     pass
                 
 def _messageBox(event=None):
@@ -210,6 +230,7 @@ def _saveMessage():
     """
     Displays a small message box
     """
+    save()
     mBox.showinfo("Save", "Saved Successfully. Have a good time :)")    
         
 def about():
