@@ -67,6 +67,17 @@ def loadImage(event=None):
     global workingDirectory, imagesList, currentImageIndex
     workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
+    
+    try:
+        os.mkdir(workingDirectory+"/beer")
+        os.mkdir(workingDirectory+"/wine")
+        os.mkdir(workingDirectory+"/others")
+    except FileExistsError:
+        imagesList.remove("beer")
+        imagesList.remove("wine")
+        imagesList.remove("others")
+        
+    
     currentImageIndex = 0
     pass
 
@@ -101,7 +112,7 @@ def loadNextImage(event=None):
         imageLabel = ttk.Label(app, image = tkImage)
         imageLabel.grid(row = 4, column =0, columnspan = 4)
         saveLabel()
-        if currentImageIndex >= len(imagesList):
+        if currentImageIndex >= len(imagesList)-1:
              mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
         pass
     except OSError:
@@ -138,24 +149,33 @@ def save(event=None):
     """
     backupFile()
     
+    
 def saveLabel(event=None):
     '''
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
     global globalIndex, background
+    # beerDir = workingDirectory+"/beer"
+    # wineDir = workingDirectory+"/wine"
+    # otherDir = workingDirectory+"/other"
     with open("DrinkingDataLabels.csv","a") as file:
         label = radioLabel.get()
+        imageName = imagesList[currentImageIndex]
+        
         if label == 0: 
             background="light goldenrod"
             app.configure(background=background)
+            copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
+            
         elif label == 1: 
             background="brown4"
             app.configure(background=background)
+            copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
         else : 
             background="steel blue"
             app.configure(background=background)
-        imageName = imagesList[currentImageIndex]
-        
+            copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
+            
         file.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
         globalIndex += 1
         save()
