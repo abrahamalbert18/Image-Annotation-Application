@@ -46,6 +46,18 @@ def saveFileFirstTime():
             file.write(new_line)
     
     pass    
+
+def saveTempFileFirstTime():
+    '''
+    This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
+    '''
+    with open(workingDirectory+"/tempDrinkingDataLabels.csv","w+") as file:
+        firstLine = file.read()
+        if len(firstLine) == 0:
+            new_line = "originalFileName,globalIndex,label"
+            file.write(new_line)
+    
+    pass    
         
 def backupFile():
     '''
@@ -72,6 +84,8 @@ def loadImage(event=None):
         os.mkdir(workingDirectory+"/beer")
         os.mkdir(workingDirectory+"/wine")
         os.mkdir(workingDirectory+"/other")
+        saveTempFileFirstTime()
+        
     except FileExistsError:
         imagesList.remove("beer")
         imagesList.remove("wine")
@@ -147,7 +161,7 @@ def save(event=None):
     """
     Saves a backup file in backup directory.
     """
-    df = pd.read_csv("DrinkingDataLabels.csv")
+    df = pd.read_csv(workingDirectory+"/tempDrinkingDataLabels.csv")
 
     beerDir = workingDirectory+"/beer/"
     wineDir = workingDirectory+"/wine/"
@@ -177,7 +191,7 @@ def saveLabel(event=None):
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
     global globalIndex, background
-    
+    tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
     with open("DrinkingDataLabels.csv","a") as file:
         label = radioLabel.get()
         imageName = imagesList[currentImageIndex]
@@ -197,7 +211,9 @@ def saveLabel(event=None):
             # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
             
         file.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
+        tempFile.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
         globalIndex += 1
+    tempFile.close()
         # save()
     pass
                 
