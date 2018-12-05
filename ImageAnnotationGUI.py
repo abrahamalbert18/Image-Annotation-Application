@@ -75,7 +75,7 @@ def loadImage(event=None):
     global workingDirectory, imagesList, currentImageIndex, globalIndex, lastImage
     workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
-    
+    imagesList = sorted(imagesList, key = lambda x: int(x[:-4]))
     # try:
     #     os.mkdir(workingDirectory+"/beer")
     #     os.mkdir(workingDirectory+"/wine")
