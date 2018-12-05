@@ -20,18 +20,18 @@ background = "cyan4"
 app.configure(background=background)
 
 workingDirectory = os.getcwd()
-imagesList = []
 tkImage = None
+imagesList = []
 currentImageIndex = 0
 df = pd.read_csv("DrinkingDataLabels.csv")
 
 try:
-    df = df[df['label'] != 99]
+    df = df[df['label'] != 0]
 except:
     pass
 
 try:
-    globalIndex = df.count()['originalFileName']
+    globalIndex = df.count()['originalFileName'] - 1
 except:
     globalIndex = 1
 
@@ -42,7 +42,7 @@ def saveFileFirstTime():
     with open("DrinkingDataLabels.csv","w+") as file:
         firstLine = file.read()
         if len(firstLine) == 0:
-            new_line = "originalFileName,globalIndex,label"
+            new_line = "originalFileName,label"
             file.write(new_line)
     
     pass    
@@ -54,7 +54,7 @@ def saveTempFileFirstTime():
     with open(workingDirectory+"/tempDrinkingDataLabels.csv","w+") as file:
         firstLine = file.read()
         if len(firstLine) == 0:
-            new_line = "originalFileName,globalIndex,label"
+            new_line = "originalFileName,label"
             file.write(new_line)
     
     pass    
@@ -76,23 +76,24 @@ def loadImage(event=None):
     """
     This function is used to load images from the directory.
     """
-    global workingDirectory, imagesList, currentImageIndex
+    global workingDirectory, imagesList, currentImageIndex, globalIndex
     workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
     
-    try:
-        os.mkdir(workingDirectory+"/beer")
-        os.mkdir(workingDirectory+"/wine")
-        os.mkdir(workingDirectory+"/other")
-        saveTempFileFirstTime()
+    # try:
+    #     os.mkdir(workingDirectory+"/beer")
+    #     os.mkdir(workingDirectory+"/wine")
+    #     os.mkdir(workingDirectory+"/other")
+    #     saveTempFileFirstTime()
         
-    except FileExistsError:
-        imagesList.remove("beer")
-        imagesList.remove("wine")
-        imagesList.remove("other")
+    # except FileExistsError:
+    #     imagesList.remove("beer")
+    #     imagesList.remove("wine")
+    #     imagesList.remove("other")
         
     
-    currentImageIndex = 0
+    currentImageIndex = globalIndex - 1
+    loadNextImage()
     pass
 
 
@@ -131,7 +132,9 @@ def loadNextImage(event=None):
         pass
     except OSError:
         imagesList.pop(currentImageIndex)
-        os.remove(imgPath)
+    except IndexError:
+        pass
+        # os.remove(imgPath)
 
 def loadPrevImage(event=None):      
     """
@@ -154,7 +157,7 @@ def loadPrevImage(event=None):
         pass
     except OSError:
         imagesList.pop(currentImageIndex)
-        os.remove(imgPath)
+        # os.remove(imgPath)
         # currentImageIndex -= 1
     
 def save(event=None):
@@ -191,32 +194,65 @@ def saveLabel(event=None):
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
     global globalIndex, background
-    tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
-    with open("DrinkingDataLabels.csv","a") as file:
-        label = radioLabel.get()
-        imageName = imagesList[currentImageIndex]
-        
-        if label == 0: 
-            background="light goldenrod"
-            app.configure(background=background)
-            # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
+    # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
+    if len(imagesList) != 0:
+        with open("DrinkingDataLabels.csv","a") as file:
+            label = radioLabel.get()
+            imageName = imagesList[currentImageIndex]
             
-        elif label == 1: 
-            background="brown4"
-            app.configure(background=background)
-            # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
-        else : 
-            background="steel blue"
-            app.configure(background=background)
-            # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
+            if label == 1: 
+                background="light goldenrod"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
+                
+            elif label == 2: 
+                background="brown4"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+                
+            elif label == 3: 
+                background="brown4"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+                
+            elif label == 4: 
+                background="brown4"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")    
             
-        file.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
-        tempFile.writelines("\n"+imageName+","+str(globalIndex)+","+str(label))
-        globalIndex += 1
-    tempFile.close()
+            elif label == 5: 
+                background="brown4"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+            
+            elif label == 6: 
+                background="brown4"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+            
+            else : 
+                background="steel blue"
+                app.configure(background=background)
+                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
+                
+            file.writelines("\n"+imageName+","+str(label))
+            # tempFile.writelines("\n"+imageName+","+str(label))
+            globalIndex += 1
+    # tempFile.close()
         # save()
     pass
-                
+        
+def saveRadioButtonLabel(label, event=None):
+    '''
+    This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
+    '''
+    global globalIndex, background, imagesList
+    # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
+    radioLabel.set(label)
+    saveLabel()
+    loadNextImage()
+    pass        
+
 def _messageBox(event=None):
     """
     Displays a message box with instructions.
@@ -329,44 +365,44 @@ actionSaveLabel.config(font= ("Tahoma",16))
 
 #Creating a radio button for class "beer"
 radioLabel = tk.IntVar()
-radioLabel.set(99)
+radioLabel.set(0)
 
 radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Cup", value = 1, command = saveLabel)
-radioLabel1.grid(column=1, row = 5)
+radioLabel1.grid(column=1, row = 5, sticky = tk.W)
 radioLabel1.config(font=("Tahoma",16))
 radioLabel1.configure(background = background)
 
 radioLabel2 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Bottle", value = 2, command = saveLabel)
-radioLabel2.grid(column=2, row = 5)
+radioLabel2.grid(column=1, row = 6, sticky = tk.W)
 radioLabel2.config(font=("Tahoma",16))
 radioLabel2.configure(background = background)
 
 radioLabel3 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Can", value = 3, command = saveLabel)
-radioLabel3.grid(column=3, row = 5)
+radioLabel3.grid(column=1, row = 7, sticky = tk.W)
 radioLabel3.config(font=("Tahoma",16))
 radioLabel3.configure(background = background)
 
 
 radioLabel4 = tk.Radiobutton(app, variable = radioLabel, text = "Wine", value = 4, command = saveLabel)
-radioLabel4.grid(column=4, row = 5)
+radioLabel4.grid(column=2, row = 5, sticky = tk.W)
 radioLabel4.config(font=("Tahoma",16))
 radioLabel4.configure(background = background)
 
 
 radioLabel5 = tk.Radiobutton(app, variable = radioLabel, text = "Champagne", value = 5, command = saveLabel)
-radioLabel5.grid(column=5, row = 5)
+radioLabel5.grid(column=2, row = 6, sticky = tk.W)
 radioLabel5.config(font=("Tahoma",16))
 radioLabel5.configure(background = background)
 
 
 radioLabel6 = tk.Radiobutton(app, variable = radioLabel, text = "Undecided", value = 6, command = saveLabel)
-radioLabel6.grid(column=6, row = 5)
+radioLabel6.grid(column=3, row = 6, sticky = tk.W)
 radioLabel6.config(font=("Tahoma",16))
 radioLabel6.configure(background = background)
 
 
 radioLabel7 = tk.Radiobutton(app, variable = radioLabel, text = "Other", value = 7, command = saveLabel)
-radioLabel7.grid(column=7, row = 5)
+radioLabel7.grid(column=3, row = 5, sticky = tk.W)
 radioLabel7.config(font=("Tahoma",16))
 radioLabel7.configure(background = background)
 # #Creating a scrolled text
@@ -399,21 +435,57 @@ menuBar.add_cascade(label="Help", menu= helpMenu)
 #Placing the cursor
 # textEntered.focus()
 
-#Adding Primary keyboard shortcuts
-app.bind("n",loadNextImage)
-app.bind("p",loadPrevImage)
-app.bind("s",_messageShorcut)
-app.bind("h",_messageBox)
-app.bind("x",_exitGUI)
-app.bind("o",loadImage)
+#defining keyboard shortcuts
+def keyPressed(event):
+    key = event.char
+    
+    if key == "n":
+        loadNextImage()
+    elif key == "p":
+        loadPrevImage()
+    elif key == "s":
+        _messageShorcut()
+    elif key == "h":
+        _messageBox()
+    elif key == "x":
+        _exitGUI()
+    elif key == "o":
+        loadImage()
+    elif key == "1":
+        saveRadioButtonLabel(label = 1)
+    elif key == "2":
+        saveRadioButtonLabel(label = 2)
+    elif key == "3":
+        saveRadioButtonLabel(label = 3)
+    elif key == "4":
+        saveRadioButtonLabel(label = 4)
+    elif key == "5":
+        saveRadioButtonLabel(label = 5)
+    elif key == "6":
+        saveRadioButtonLabel(label = 6)
+    elif key == "7":
+        saveRadioButtonLabel(label = 7)
+        
+    
+    
+# #Adding Primary keyboard shortcuts
+# app.bind("n",loadNextImage)
+# app.bind("p",loadPrevImage)
+# app.bind("s",_messageShorcut)
+# app.bind("h",_messageBox)
+# app.bind("x",_exitGUI)
+# app.bind("o",loadImage)
+
+#Adding Radiobutton Shortcuts
+app.bind("<Key>", keyPressed)
 
 #Adding Secondary keyboard shortcuts
-app.bind("<Right>",loadNextImage)
-app.bind("<Left>",loadPrevImage)
-app.bind("e",loadNextImage)
-app.bind("w",loadPrevImage)
-app.bind("<Up>",loadNextImage)
-app.bind("<Down>",loadPrevImage)
+# app.bind("<Right>",loadNextImage)
+# app.bind("<Left>",loadPrevImage)
+# app.bind("e",loadNextImage)
+# app.bind("w",loadPrevImage)
+# app.bind("<Up>",loadNextImage)
+# app.bind("<Down>",loadPrevImage)
 
 # app.option_add('*show.msg.font', 'Calibri -24')
 #run the window
