@@ -29,18 +29,18 @@ previousLabels = []
 df = pd.read_csv("DrinkingDataLabels.csv")
 
 try:
-    # df = df[df['label'] != "999"]
+    df = df[df['label'] != 998]
     df.drop_duplicates(subset="originalFileName", keep = "last", inplace=True)
+    df.to_csv("DrinkingDataLabels.csv", index=False)
 except:
     pass
 
 try:
-    count = df.count()['originalFileName'] - 1
-    lastImage = df.loc[count]['originalFileName']
+    index = df.last_valid_index()
+    lastImage = df['originalFileName'].loc[index]
     lastImageId = lastImage[:-4]
-    globalIndex = int(lastImageId) 
 except:
-    globalIndex = 1
+    lastImage = ""
 
 def saveFileFirstTime():
     '''
@@ -90,7 +90,7 @@ def loadImage(event=None):
     try:
         currentImageIndex = imagesList.index(lastImage)
     except:
-        currentImageIndex = 0
+        currentImageIndex = -1
     loadNextImage()
     pass
 
@@ -128,8 +128,8 @@ def loadNextImage(event=None):
     try:    
         global currentImageIndex, tkImage
         print(currentImageIndex)
-        if currentImageIndex != 0:
-            currentImageIndex += 1 
+        
+        currentImageIndex += 1 
         img = imagesList[currentImageIndex]    
         print(img)
         imgPath = workingDirectory+"/"+img
@@ -222,7 +222,7 @@ def saveLabel(event=None):
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
                 
             file.writelines("\n"+imageName+","+str(label-1))
-            previousLabels.append(label)
+            previousLabels.append(label-1)
             try:
                 # print(previousLabels)
                 previousLabels = previousLabels[-2:]
@@ -243,7 +243,12 @@ def saveRadioButtonLabel(label, event=None):
     '''
     global globalIndex, background, imagesList
     # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
-    radioLabel.set(label)
+    
+    if radioLabel.get() == 999:
+        radioLabel.set(label)    
+        saveLabel()
+    else:
+        radioLabel.set(label)
     loadNextImage()
     pass        
 
@@ -276,6 +281,8 @@ def _saveMessage():
     """
     Displays a small message box
     """
+    saveLabel()
+    backupFile()
     mBox.showinfo("Save", "Saved Successfully. Have a good time :)")    
         
 def about():
@@ -370,7 +377,7 @@ actionSaveLabel.config(font= ("Tahoma",16))
 
 #Creating a radio button for class "beer"
 radioLabel = tk.IntVar()
-radioLabel.set(7)
+radioLabel.set(999)
 
 radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Cup", value = 1, command = saveLabel)
 radioLabel1.grid(column=1, row = 5, sticky = tk.W)
