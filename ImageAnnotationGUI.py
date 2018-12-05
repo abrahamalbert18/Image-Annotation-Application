@@ -226,7 +226,7 @@ def saveLabel(event=None):
             try:
                 # print(previousLabels)
                 previousLabels = previousLabels[-2:]
-                previousLabel = annotationLabels[previousLabels[-2]]
+                previousLabel = annotationLabels[previousLabels[-1]]
             except IndexError:
                 previousLabel = annotationLabels[-1]
             displayPrevLabel()
