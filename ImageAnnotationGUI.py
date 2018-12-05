@@ -23,16 +23,22 @@ workingDirectory = os.getcwd()
 tkImage = None
 imagesList = []
 currentImageIndex = 0
-annotationLabels = ["Beer Cup", "Beer Bottle", "Beer Can", "Wine", "Champagne", "Undecided", "Other"]
+annotationLabels = ["Beer Cup!!!!!", "Beer Bottle", "Beer Can!!!!!", "Wine!!!!!!!!!!", "Champagne!!", "Undecided!!", "Other!!!!!!!!!!"]
+previousLabel = None
+previousLabels = []
 df = pd.read_csv("DrinkingDataLabels.csv")
 
 try:
-    df = df[df['label'] != 0]
+    # df = df[df['label'] != "999"]
+    df.drop_duplicates(subset="originalFileName", keep = "last", inplace=True)
 except:
     pass
 
 try:
-    globalIndex = df.count()['originalFileName'] - 1
+    count = df.count()['originalFileName'] - 1
+    lastImage = df.loc[count]['originalFileName']
+    lastImageId = lastImage[:-4]
+    globalIndex = int(lastImageId) 
 except:
     globalIndex = 1
 
@@ -66,7 +72,7 @@ def loadImage(event=None):
     """
     This function is used to load images from the directory.
     """
-    global workingDirectory, imagesList, currentImageIndex, globalIndex
+    global workingDirectory, imagesList, currentImageIndex, globalIndex, lastImage
     workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
     
@@ -81,8 +87,10 @@ def loadImage(event=None):
     #     imagesList.remove("wine")
     #     imagesList.remove("other")
         
-    
-    currentImageIndex = globalIndex - 1
+    try:
+        currentImageIndex = imagesList.index(lastImage)
+    except:
+        currentImageIndex = 0
     loadNextImage()
     pass
 
@@ -96,6 +104,21 @@ def loadImage(event=None):
 #     imageLabel = tk.Label(app, image = tkImage)
 #     imageLabel.pack()    
 
+def displayPrevLabel():
+    global previousLabel
+    
+    label = ttk.Label(app,text=previousLabel)
+    label.grid(column= 3, row=0, sticky = "W")
+    label.config(font=("Tahoma","20", "bold"))
+    label.configure(background = background)
+    
+    previousLabel = None
+    label = ttk.Label(app,text=previousLabel)
+    label.grid(column= 3, row=0, sticky = "W")
+    label.config(font=("Tahoma","20", "bold"))
+    label.configure(background = background)
+    
+    pass
 
 
 def loadNextImage(event=None):    
@@ -105,9 +128,8 @@ def loadNextImage(event=None):
     try:    
         global currentImageIndex, tkImage
         print(currentImageIndex)
-        if currentImageIndex == 0:
-            currentImageIndex = 0        
-        currentImageIndex += 1 
+        if currentImageIndex != 0:
+            currentImageIndex += 1 
         img = imagesList[currentImageIndex]    
         print(img)
         imgPath = workingDirectory+"/"+img
@@ -117,6 +139,7 @@ def loadNextImage(event=None):
         imageLabel = ttk.Label(app, image = tkImage)
         imageLabel.grid(row = 4, column =0, columnspan = 4)
         saveLabel()
+        
         if currentImageIndex >= len(imagesList)-1:
              mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
         pass
@@ -156,7 +179,7 @@ def saveLabel(event=None):
     '''
     This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
     '''
-    global globalIndex, background
+    global globalIndex, background, previousLabel, annotationLabels, previousLabels
     # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
     if len(imagesList) != 0:
         with open("DrinkingDataLabels.csv","a") as file:
@@ -198,9 +221,18 @@ def saveLabel(event=None):
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
                 
-            file.writelines("\n"+imageName+","+str(label))
+            file.writelines("\n"+imageName+","+str(label-1))
+            previousLabels.append(label)
+            try:
+                # print(previousLabels)
+                previousLabels = previousLabels[-2:]
+                previousLabel = annotationLabels[previousLabels[-2]]
+            except IndexError:
+                previousLabel = annotationLabels[-1]
+            displayPrevLabel()
+            # print("Previous Label = ", previousLabel)
             # tempFile.writelines("\n"+imageName+","+str(label))
-            globalIndex += 1
+            # globalIndex += 1
     # tempFile.close()
         # save()
     pass
@@ -212,7 +244,6 @@ def saveRadioButtonLabel(label, event=None):
     global globalIndex, background, imagesList
     # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
     radioLabel.set(label)
-    saveLabel()
     loadNextImage()
     pass        
 
@@ -270,7 +301,13 @@ classLabel.config(font=("Tahoma","20", "bold"))
 classLabel.configure(background = background)
 
 label = ttk.Label(app,text="Previous Image Label : ")
-label.grid(column=4, row=0, sticky = "W")
+label.grid(column= 2, row=0, sticky = "W")
+label.config(font=("Tahoma","20", "bold"))
+label.configure(background = background)
+
+
+label = ttk.Label(app,text=previousLabel)
+label.grid(column= 3, row=0, sticky = "W")
 label.config(font=("Tahoma","20", "bold"))
 label.configure(background = background)
 
@@ -333,7 +370,7 @@ actionSaveLabel.config(font= ("Tahoma",16))
 
 #Creating a radio button for class "beer"
 radioLabel = tk.IntVar()
-radioLabel.set(0)
+radioLabel.set(7)
 
 radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Cup", value = 1, command = saveLabel)
 radioLabel1.grid(column=1, row = 5, sticky = tk.W)
@@ -364,13 +401,13 @@ radioLabel5.configure(background = background)
 
 
 radioLabel6 = tk.Radiobutton(app, variable = radioLabel, text = "Undecided", value = 6, command = saveLabel)
-radioLabel6.grid(column=3, row = 6, sticky = tk.W)
+radioLabel6.grid(column=3, row = 5, sticky = tk.W)
 radioLabel6.config(font=("Tahoma",16))
 radioLabel6.configure(background = background)
 
 
 radioLabel7 = tk.Radiobutton(app, variable = radioLabel, text = "Other", value = 7, command = saveLabel)
-radioLabel7.grid(column=3, row = 5, sticky = tk.W)
+radioLabel7.grid(column=3, row = 6, sticky = tk.W)
 radioLabel7.config(font=("Tahoma",16))
 radioLabel7.configure(background = background)
 # #Creating a scrolled text
@@ -407,9 +444,9 @@ menuBar.add_cascade(label="Help", menu= helpMenu)
 def keyPressed(event):
     key = event.char
     
-    if key in ["n","<Right>","e","Up"]:
+    if key in ["n","e"]:
         loadNextImage()
-    elif key in ["p", "<Left>", "w", "Down"]:
+    elif key in ["p", "w"]:
         loadPrevImage()
     elif key == "s":
         _messageShorcut()
@@ -436,12 +473,12 @@ def keyPressed(event):
 app.bind("<Key>", keyPressed)
 
 #Adding Secondary keyboard shortcuts
-# app.bind("<Right>",loadNextImage)
-# app.bind("<Left>",loadPrevImage)
+app.bind("<Right>",loadNextImage)
+app.bind("<Left>",loadPrevImage)
 # app.bind("e",loadNextImage)
 # app.bind("w",loadPrevImage)
-# app.bind("<Up>",loadNextImage)
-# app.bind("<Down>",loadPrevImage)
+app.bind("<Up>",loadNextImage)
+app.bind("<Down>",loadPrevImage)
 
 # app.option_add('*show.msg.font', 'Calibri -24')
 #run the window
