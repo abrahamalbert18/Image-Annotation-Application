@@ -23,6 +23,7 @@ workingDirectory = os.getcwd()
 tkImage = None
 imagesList = []
 currentImageIndex = 0
+annotationLabels = ["Beer Cup", "Beer Bottle", "Beer Can", "Wine", "Champagne", "Undecided", "Other"]
 df = pd.read_csv("DrinkingDataLabels.csv")
 
 try:
@@ -45,20 +46,9 @@ def saveFileFirstTime():
             new_line = "originalFileName,label"
             file.write(new_line)
     
-    pass    
+    pass
 
-def saveTempFileFirstTime():
-    '''
-    This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
-    '''
-    with open(workingDirectory+"/tempDrinkingDataLabels.csv","w+") as file:
-        firstLine = file.read()
-        if len(firstLine) == 0:
-            new_line = "originalFileName,label"
-            file.write(new_line)
-    
-    pass    
-        
+
 def backupFile():
     '''
     This file saves a backup file just incase if the original file is accidentally deleted.
@@ -160,33 +150,6 @@ def loadPrevImage(event=None):
         # os.remove(imgPath)
         # currentImageIndex -= 1
     
-def save(event=None):
-    """
-    Saves a backup file in backup directory.
-    """
-    df = pd.read_csv(workingDirectory+"/tempDrinkingDataLabels.csv")
-
-    beerDir = workingDirectory+"/beer/"
-    wineDir = workingDirectory+"/wine/"
-    otherDir = workingDirectory+"/other/"
-    
-    df[df['label'] != 99]
-    df.drop_duplicates(subset="originalFileName", keep='last', inplace=True)
-    indices = df.index.get_values()
-    print("Saving file.")
-    for e,i in enumerate(indices):
-        print(e)
-        imageName = df['originalFileName'].loc[i]
-        print(imageName)
-        # gIndex = df['globalIndex'].loc[i]
-        if df['label'].loc[i] == 0:
-            copyfile(workingDirectory+"/"+imageName, beerDir+str(e)+".jpg")
-        elif df['label'].loc[i] == 1:
-            copyfile(workingDirectory+"/"+imageName, wineDir+str(e)+".jpg")
-        else:
-            copyfile(workingDirectory+"/"+imageName, otherDir+str(e)+".jpg")
-    
-    backupFile()
     
     
 def saveLabel(event=None):
@@ -282,7 +245,6 @@ def _saveMessage():
     """
     Displays a small message box
     """
-    save()
     mBox.showinfo("Save", "Saved Successfully. Have a good time :)")    
         
 def about():
@@ -306,6 +268,12 @@ classLabel = ttk.Label(app,text="Class Labels: ")
 classLabel.grid(column=0, row=5, sticky = "W")
 classLabel.config(font=("Tahoma","20", "bold"))
 classLabel.configure(background = background)
+
+label = ttk.Label(app,text="Previous Image Label : ")
+label.grid(column=4, row=0, sticky = "W")
+label.config(font=("Tahoma","20", "bold"))
+label.configure(background = background)
+
 
 imgPath = "./IMG_0305.JPG"
 img = Image.open(imgPath)
@@ -418,7 +386,7 @@ app.configure(menu = menuBar)
 
 #Adding file menu items
 fileMenu = Menu(menuBar, tearoff = 0)
-fileMenu.add_command(label="Save",command = save)
+fileMenu.add_command(label="Shortcut",command = _messageShorcut)
 fileMenu.add_separator()
 fileMenu.add_command(label="Exit", command = _exitGUI)
 menuBar.add_cascade(label="File", menu=fileMenu)
@@ -439,9 +407,9 @@ menuBar.add_cascade(label="Help", menu= helpMenu)
 def keyPressed(event):
     key = event.char
     
-    if key == "n":
+    if key in ["n","<Right>","e","Up"]:
         loadNextImage()
-    elif key == "p":
+    elif key in ["p", "<Left>", "w", "Down"]:
         loadPrevImage()
     elif key == "s":
         _messageShorcut()
@@ -451,22 +419,10 @@ def keyPressed(event):
         _exitGUI()
     elif key == "o":
         loadImage()
-    elif key == "1":
-        saveRadioButtonLabel(label = 1)
-    elif key == "2":
-        saveRadioButtonLabel(label = 2)
-    elif key == "3":
-        saveRadioButtonLabel(label = 3)
-    elif key == "4":
-        saveRadioButtonLabel(label = 4)
-    elif key == "5":
-        saveRadioButtonLabel(label = 5)
-    elif key == "6":
-        saveRadioButtonLabel(label = 6)
-    elif key == "7":
-        saveRadioButtonLabel(label = 7)
-        
-    
+    elif key in ["1", "2", "3", "4", "5", "6", "7"]:
+        saveRadioButtonLabel(label= int(key))
+    else:
+        pass
     
 # #Adding Primary keyboard shortcuts
 # app.bind("n",loadNextImage)
