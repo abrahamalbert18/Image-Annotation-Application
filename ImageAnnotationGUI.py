@@ -331,20 +331,44 @@ actionSaveLabel.config(font= ("Tahoma",16))
 radioLabel = tk.IntVar()
 radioLabel.set(99)
 
-radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "Beer", value = 0, command = saveLabel)
+radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Cup", value = 1, command = saveLabel)
 radioLabel1.grid(column=1, row = 5)
 radioLabel1.config(font=("Tahoma",16))
 radioLabel1.configure(background = background)
 
-radioLabel2 = tk.Radiobutton(app, variable = radioLabel, text = "Wine", value = 1, command = saveLabel)
+radioLabel2 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Bottle", value = 2, command = saveLabel)
 radioLabel2.grid(column=2, row = 5)
 radioLabel2.config(font=("Tahoma",16))
 radioLabel2.configure(background = background)
 
-radioLabel3 = tk.Radiobutton(app, variable = radioLabel, text = "Others", value = 2, command = saveLabel)
+radioLabel3 = tk.Radiobutton(app, variable = radioLabel, text = "Beer Can", value = 3, command = saveLabel)
 radioLabel3.grid(column=3, row = 5)
 radioLabel3.config(font=("Tahoma",16))
 radioLabel3.configure(background = background)
+
+
+radioLabel4 = tk.Radiobutton(app, variable = radioLabel, text = "Wine", value = 4, command = saveLabel)
+radioLabel4.grid(column=4, row = 5)
+radioLabel4.config(font=("Tahoma",16))
+radioLabel4.configure(background = background)
+
+
+radioLabel5 = tk.Radiobutton(app, variable = radioLabel, text = "Champagne", value = 5, command = saveLabel)
+radioLabel5.grid(column=5, row = 5)
+radioLabel5.config(font=("Tahoma",16))
+radioLabel5.configure(background = background)
+
+
+radioLabel6 = tk.Radiobutton(app, variable = radioLabel, text = "Undecided", value = 6, command = saveLabel)
+radioLabel6.grid(column=6, row = 5)
+radioLabel6.config(font=("Tahoma",16))
+radioLabel6.configure(background = background)
+
+
+radioLabel7 = tk.Radiobutton(app, variable = radioLabel, text = "Other", value = 7, command = saveLabel)
+radioLabel7.grid(column=7, row = 5)
+radioLabel7.config(font=("Tahoma",16))
+radioLabel7.configure(background = background)
 # #Creating a scrolled text
 # scrolHeight = 4
 # scrolWidth = 40
