@@ -39,6 +39,7 @@ try:
     index = df.last_valid_index()
     lastImage = df['originalFileName'].loc[index]
     lastImageId = lastImage[:-4]
+    previousLabel = annotationLabels[df['label'].loc[index]]
 except:
     lastImage = ""
 
@@ -228,7 +229,7 @@ def saveLabel(event=None):
                 previousLabels = previousLabels[-2:]
                 previousLabel = annotationLabels[previousLabels[-2]]
             except IndexError:
-                previousLabel = annotationLabels[-1]
+                pass
             displayPrevLabel()
             # print("Previous Label = ", previousLabel)
             # tempFile.writelines("\n"+imageName+","+str(label))
