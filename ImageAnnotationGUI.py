@@ -31,7 +31,7 @@ df = pd.read_csv("DrinkingDataLabels.csv")
 try:
     df = df[df['label'] != 998]
     df.drop_duplicates(subset="originalFileName", keep = "last", inplace=True)
-    df.to_csv("DrinkingDataLabels.csv", index=False)
+    df.to_csv("PreprocessedDrinkingDataLabels.csv", index=False, header = True)
 except:
     pass
 
@@ -88,7 +88,7 @@ def loadImage(event=None):
     #     imagesList.remove("other")
         
     try:
-        currentImageIndex = imagesList.index(lastImage)
+        currentImageIndex = imagesList.index(lastImage)-1
     except:
         currentImageIndex = -1
     loadNextImage()
@@ -226,7 +226,7 @@ def saveLabel(event=None):
             try:
                 # print(previousLabels)
                 previousLabels = previousLabels[-2:]
-                previousLabel = annotationLabels[previousLabels[-1]]
+                previousLabel = annotationLabels[previousLabels[-2]]
             except IndexError:
                 previousLabel = annotationLabels[-1]
             displayPrevLabel()
