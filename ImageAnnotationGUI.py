@@ -188,17 +188,17 @@ def saveLabel(event=None):
             imageName = imagesList[currentImageIndex]
             
             if label == 1: 
-                background="light goldenrod"
+                background="gold"
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
                 
             elif label == 2: 
-                background="brown4"
+                background="dark green"
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
                 
             elif label == 3: 
-                background="brown4"
+                background="goldenrod"
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
                 
@@ -208,17 +208,17 @@ def saveLabel(event=None):
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")    
             
             elif label == 5: 
-                background="brown4"
+                background="light goldenrod"
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
             
             elif label == 6: 
-                background="brown4"
+                background="magenta4"
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
             
             else : 
-                background="steel blue"
+                background="cyan4"
                 app.configure(background=background)
                 # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
                 
@@ -257,25 +257,25 @@ def _messageBox(event=None):
     """
     Displays a message box with instructions.
     """
-    mBox._show("Help","By default an image is displayed for layout purpose.\
-                  Instructions: \n1. Open the folder with all the images. \
-                                \n2. Press next image.\
-                                \n3. Select the class label either beer or wine or other.\
-                                \n4. Continue untill the last image in the folder.\
-                                \n5. Press save button before you exit.")
+    mBox._show("Help","Please press s for shorcuts.\
+                       \nFor instructions please go through Instructions.docx")
     pass
 
 def _messageShorcut(event=None):
     """
     Displays a message box with instructions.
     """
-    mBox._show("Shortcuts","These simple keyboard shortcuts should reduce the mouse usage.\
-                            \n 1. o --> open folder \
-                            \n 2. w, p, <Left>, <Down> --> Previous image\
-                            \n 3. e, n, <Right>, <Up> --> Next image\
-                            \n 4. s --> Shortcuts\
-                            \n 5. h --> Help\
-                            \n 6. x --> Save and Exit.")
+    mBox._show("Shortcuts","1  Beer Cup\t2  Beer Bottle\t3  Beer Can\
+                           \n4  Wine \t5  Champagne \
+                           \n6  Undecided\t7  Other\
+                \n\nNavigation Shortcuts:\
+                   \no  Open folder, s  displays shortcuts,\
+                   \nx  exit the program\
+                    \nUp and Right arrows will display the next image.\
+                    \nDown and Left arrows will display the previous image.\
+                    \nw or p  will display the previous image.\
+                    \ne or n  will display the next image.\
+                ")
     pass
 
 def _saveMessage():
@@ -290,7 +290,9 @@ def about():
     """
     Displays a small message box with details about.
     """
-    mBox.showinfo("About","This is a very basic application created for labelling images. @2018")
+    mBox.showinfo("About","This is a very basic application created for labelling images. \
+                  \n email address: 19191600@students.latrobe.edu.au \
+                  \n@2018")
 
 #Creating a label frame for dynamic control of GUI 
 # lFrame = ttk.LabelFrame(app, text = "Image Labelling")
