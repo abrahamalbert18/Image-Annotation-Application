@@ -24,14 +24,14 @@ tkImage = None
 imagesList = []
 currentImageIndex = 0
 annotationLabels = ["Beer Cup!!!!!", "Beer Bottle", "Beer Can!!!!!", "Wine!!!!!!!!!!", "Champagne!!", "Undecided!!", "Other!!!!!!!!!!"]
-previousLabel = None
-previousLabels = []
 df = pd.read_csv("DrinkingDataLabels.csv")
 
 try:
     df = df[df['label'] != 999]
     df.drop_duplicates(subset="originalFileName", keep = "last", inplace=True)
     df.to_csv("PreprocessedDrinkingDataLabels.csv", index=False, header = True)
+    previousLabels = list(df['label'])
+    previousLabel = annotationLabels[previousLabels[-1]-1]
 except:
     pass
 
@@ -39,7 +39,7 @@ try:
     index = df.last_valid_index()
     lastImage = df['originalFileName'].loc[index]
     lastImageId = lastImage[:-4]
-    previousLabel = None #annotationLabels[df['label'].loc[index]]
+    # previousLabel = None #annotationLabels[df['label'].loc[index]]
 except:
     lastImage = ""
 
@@ -146,7 +146,7 @@ def loadNextImage(event=None):
     Loads the next image in the GUI.
     """
     try:    
-        global currentImageIndex, tkImage, previousLabel
+        global currentImageIndex, tkImage, previousLabel, annotationLabels
         print(currentImageIndex)
         
         currentImageIndex += 1 
@@ -160,7 +160,7 @@ def loadNextImage(event=None):
         imageLabel.grid(row = 4, column =0, columnspan = 4)
         saveLabel()
         radioLabel.set(999)
-        previousLabel = None
+        # previousLabel = annotationLabels[previousLabels[-1]-1]
         displayPrevLabel()
         if currentImageIndex >= len(imagesList)-1:
              mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
@@ -175,7 +175,7 @@ def loadPrevImage(event=None):
     """
     Loads the previous image in the GUI.
     """
-    global currentImageIndex, tkImage
+    global currentImageIndex, tkImage, previousLabels, previousLabel, annotationLabels
     currentImageIndex -= 1
     print(currentImageIndex)
     img = imagesList[currentImageIndex]
@@ -187,13 +187,20 @@ def loadPrevImage(event=None):
         tkImage = ImageTk.PhotoImage(img)
         imageLabel = ttk.Label(app, image = tkImage)
         imageLabel.grid(row = 4, column =0, columnspan = 4)
-        displayPrevLabel()
         if currentImageIndex <= 0:
              mBox.showwarning("Warning", "Cannot load previous image. This is the first image in the folder. Please try next image.")
         pass
     except OSError:
         imagesList.pop(currentImageIndex)
-        # os.remove(imgPath)
+    try:    
+        previousLabels = previousLabels[:-2]
+        previousLabel = annotationLabels[previousLabels[-1]-1]
+        # print( "PreviousLabels =",previousLabels)
+        # print("Previous Image Label =", previousLabel)
+        displayPrevLabel()
+    except IndexError:
+        previousLabel = None
+    # os.remove(imgPath)
         # currentImageIndex -= 1
     
     
@@ -246,11 +253,10 @@ def saveLabel(event=None):
                 
             file.writelines("\n"+imageName+","+str(label))
             # radioLabel.set(999)
-            previousLabels.append(label-1)
+            previousLabels.append(label)
             try:
                 # print(previousLabels)
-                previousLabels = previousLabels[-2:]
-                previousLabel = annotationLabels[previousLabels[-1]]
+                previousLabel = annotationLabels[previousLabels[-1]-1]
             except IndexError:
                 pass
             displayPrevLabel()
