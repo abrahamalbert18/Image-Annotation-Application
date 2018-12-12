@@ -195,8 +195,8 @@ def loadPrevImage(event=None):
     try:    
         previousLabels = previousLabels[:-2]
         previousLabel = annotationLabels[previousLabels[-1]-1]
-        print( "PreviousLabels =",previousLabels)
-        print("Previous Image Label =", previousLabel)
+        # print( "PreviousLabels =",previousLabels)
+        # print("Previous Image Label =", previousLabel)
         displayPrevLabel()
     except IndexError:
         previousLabel = None
