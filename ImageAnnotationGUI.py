@@ -259,6 +259,7 @@ def saveLabel(event=None):
                 previousLabel = annotationLabels[previousLabels[-1]-1]
             except IndexError:
                 previousLabel = "Not Annotated."
+                previousLabels.append(999)
             displayPrevLabel()
             
             # print("Previous Label = ", previousLabel)
