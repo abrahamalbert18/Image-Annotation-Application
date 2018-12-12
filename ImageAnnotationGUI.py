@@ -23,7 +23,7 @@ workingDirectory = os.getcwd()
 tkImage = None
 imagesList = []
 currentImageIndex = 0
-annotationLabels = ["Beer Cup!!!!!", "Beer Bottle", "Beer Can!!!!!", "Wine!!!!!!!!!!", "Champagne!!", "Undecided!!", "Other!!!!!!!!!!"]
+annotationLabels = ["Beer Cup!!!!!!!!!", "Beer Bottle!!!!", "Beer Can!!!!!!!!!", "Wine!!!!!!!!!!!!", "Champagne!!!!!", "Undecided!!!!!", "Other!!!!!!!!!!!!"]
 df = pd.read_csv("DrinkingDataLabels.csv")
 
 try:
@@ -195,8 +195,8 @@ def loadPrevImage(event=None):
     try:    
         previousLabels = previousLabels[:-2]
         previousLabel = annotationLabels[previousLabels[-1]-1]
-        # print( "PreviousLabels =",previousLabels)
-        # print("Previous Image Label =", previousLabel)
+        print( "PreviousLabels =",previousLabels)
+        print("Previous Image Label =", previousLabel)
         displayPrevLabel()
     except IndexError:
         previousLabel = None
@@ -258,7 +258,7 @@ def saveLabel(event=None):
                 # print(previousLabels)
                 previousLabel = annotationLabels[previousLabels[-1]-1]
             except IndexError:
-                pass
+                previousLabel = "Not Annotated."
             displayPrevLabel()
             
             # print("Previous Label = ", previousLabel)
