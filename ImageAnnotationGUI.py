@@ -9,7 +9,8 @@ import numpy as np
 from PIL import Image, ImageTk
 import pandas as pd
 import tkinter as tk
-from tkinter import ttk, scrolledtext, Menu, messagebox as mBox, filedialog as fd
+from tkinter import ttk, scrolledtext, Menu, messagebox as mBox
+from tkinter import filedialog as fd
 from shutil import copyfile
 
 #Initialising and title of the app.
@@ -23,9 +24,11 @@ workingDirectory = os.getcwd()
 tkImage = None
 imagesList = []
 currentImageIndex = 0
-annotationLabels = ["Beer Cup!!!!!!!!!", "Beer Bottle!!!!", "Beer Can!!!!!!!!!", "Wine!!!!!!!!!!!!", "Champagne!!!!!", "Undecided!!!!!", "Other!!!!!!!!!!!!"]
+annotationLabels = ["Beer Cup!!!!!!!!!", "Beer Bottle!!!!", 
+                    "Beer Can!!!!!!!!!","Wine!!!!!!!!!!!!", "Champagne!!!!!",
+                    "Undecided!!!!!", "Other!!!!!!!!!!!!"]
 df = pd.read_csv("DrinkingDataLabels.csv")
-
+previousLabel = None
 try:
     df = df[df['label'] != 999]
     df.drop_duplicates(subset="originalFileName", keep = "last", inplace=True)
@@ -45,7 +48,8 @@ except:
 
 def saveFileFirstTime():
     '''
-    This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
+    This function should open the file and write  "originalFileName,
+    \tglobalIndex,\tlabel" 
     '''
     with open("DrinkingDataLabels.csv","w+") as file:
         firstLine = file.read()
@@ -58,17 +62,24 @@ def saveFileFirstTime():
 
 def backupFile():
     '''
-    This file saves a backup file just incase if the original file is accidentally deleted.
+    This file saves a backup file just incase if the original file is \
+    accidentally deleted.
     '''
     try:
         os.mkdir("./backup")
-        copyfile("./DrinkingDataLabels.csv", "./backup/DrinkingDataLabelsBackup.csv")
-        os.chmod("./backup/DrinkingDataLabelsBackup.csv", stat.S_IRUSR | stat.S_IROTH)
-        copyfile("./PreprocessedDrinkingDataLabels.csv", "./backup/PreprocessedDrinkingDataLabelsBackup.csv")
-        os.chmod("./backup/PreprocessedDrinkingDataLabelsBackup.csv", stat.S_IRUSR | stat.S_IROTH)
+        copyfile("./DrinkingDataLabels.csv", 
+                 "./backup/DrinkingDataLabelsBackup.csv")
+        os.chmod("./backup/DrinkingDataLabelsBackup.csv", 
+                 stat.S_IRUSR | stat.S_IROTH)
+        copyfile("./PreprocessedDrinkingDataLabels.csv",
+                 "./backup/PreprocessedDrinkingDataLabelsBackup.csv")
+        os.chmod("./backup/PreprocessedDrinkingDataLabelsBackup.csv",
+                 stat.S_IRUSR | stat.S_IROTH)
     except OSError:
-        copyfile("./DrinkingDataLabels.csv", "./backup/DrinkingDataLabelsBackup.csv")
-        copyfile("./PreprocessedDrinkingDataLabels.csv", "./backup/PreprocessedDrinkingDataLabelsBackup.csv")
+        copyfile("./DrinkingDataLabels.csv",
+                 "./backup/DrinkingDataLabelsBackup.csv")
+        copyfile("./PreprocessedDrinkingDataLabels.csv",
+                 "./backup/PreprocessedDrinkingDataLabelsBackup.csv")
     pass
 
 
@@ -76,7 +87,8 @@ def loadImage(event=None):
     """
     This function is used to load images from the directory.
     """
-    global workingDirectory, imagesList, currentImageIndex, globalIndex, lastImage
+    global workingDirectory, imagesList, currentImageIndex, globalIndex
+    global lastImage
     workingDirectory = fd.askdirectory()
     imagesList = os.listdir(workingDirectory)
     imagesList = sorted(imagesList, key = lambda x: int(x[:-4]))
@@ -163,7 +175,9 @@ def loadNextImage(event=None):
         # previousLabel = annotationLabels[previousLabels[-1]-1]
         displayPrevLabel()
         if currentImageIndex >= len(imagesList)-1:
-             mBox.showwarning("End of Directory", "Images in the folder are annotated. Try annotating images from another folder. ")
+             mBox.showwarning("End of Directory", 
+                              "Images in the folder are annotated.\
+                              Try annotating images from another folder. ")
         pass
     except OSError:
         imagesList.pop(currentImageIndex)
@@ -175,7 +189,8 @@ def loadPrevImage(event=None):
     """
     Loads the previous image in the GUI.
     """
-    global currentImageIndex, tkImage, previousLabels, previousLabel, annotationLabels
+    global currentImageIndex, tkImage, previousLabels, previousLabel
+    global annotationLabels
     currentImageIndex -= 1
     print(currentImageIndex)
     img = imagesList[currentImageIndex]
@@ -188,7 +203,10 @@ def loadPrevImage(event=None):
         imageLabel = ttk.Label(app, image = tkImage)
         imageLabel.grid(row = 4, column =0, columnspan = 4)
         if currentImageIndex <= 0:
-             mBox.showwarning("Warning", "Cannot load previous image. This is the first image in the folder. Please try next image.")
+             mBox.showwarning("Warning", 
+                              "Cannot load previous image.\
+                              This is the first image in the folder.\
+                              Please try next image.")
         pass
     except OSError:
         imagesList.pop(currentImageIndex)
@@ -207,9 +225,11 @@ def loadPrevImage(event=None):
     
 def saveLabel(event=None):
     '''
-    This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
+    This function should open the file and write  
+    "originalFileName,\tglobalIndex,\tlabel" 
     '''
-    global globalIndex, background, previousLabel, annotationLabels, previousLabels
+    global globalIndex, background, previousLabel, annotationLabels
+    global previousLabels
     # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
     if len(imagesList) != 0:
         with open("DrinkingDataLabels.csv","a") as file:
@@ -219,37 +239,44 @@ def saveLabel(event=None):
             if label == 1: 
                 background="gold"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/beer/"+str(globalIndex)+".jpg")
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/beer/"+str(globalIndex)+".jpg")
                 
             elif label == 2: 
                 background="dark green"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/wine/"+str(globalIndex)+".jpg")
                 
             elif label == 3: 
                 background="goldenrod"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/wine/"+str(globalIndex)+".jpg")
                 
             elif label == 4: 
                 background="brown4"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")    
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/wine/"+str(globalIndex)+".jpg")    
             
             elif label == 5: 
                 background="light goldenrod"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/wine/"+str(globalIndex)+".jpg")
             
             elif label == 6: 
                 background="magenta4"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/wine/"+str(globalIndex)+".jpg")
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/wine/"+str(globalIndex)+".jpg")
             
             else : 
                 background="cyan4"
                 app.configure(background=background)
-                # copyfile(workingDirectory+"/"+imageName, workingDirectory+"/others/"+str(globalIndex)+".jpg")
+#                 copyfile(workingDirectory+"/"+imageName, 
+#                          workingDirectory+"/others/"+str(globalIndex)+".jpg")
                 
             file.writelines("\n"+imageName+","+str(label))
             # radioLabel.set(999)
@@ -271,7 +298,8 @@ def saveLabel(event=None):
         
 def saveRadioButtonLabel(label, event=None):
     '''
-    This function should open the file and write  "originalFileName,\tglobalIndex,\tlabel" 
+    This function should open the file and write  
+    "originalFileName,\tglobalIndex,\tlabel" 
     '''
     global globalIndex, background, imagesList
     # tempFile = open(workingDirectory+"/tempDrinkingDataLabels.csv","a")
@@ -318,8 +346,10 @@ def _saveMessage():
 
     try:
         df = df[df['label'] != 999]
-        df.drop_duplicates(subset="originalFileName", keep = "last", inplace=True)
-        df.to_csv("PreprocessedDrinkingDataLabels.csv", index=False, header = True)
+        df.drop_duplicates(subset="originalFileName", 
+                           keep = "last", inplace=True)
+        df.to_csv("PreprocessedDrinkingDataLabels.csv", 
+                  index=False, header = True)
     except:
         pass
     backupFile()
@@ -329,7 +359,9 @@ def about():
     """
     Displays a small message box with details about.
     """
-    mBox.showinfo("About","This is a very basic application created for labelling images. \
+    mBox.showinfo("About",
+                  "This is a very basic application created \
+                  for labelling images. \
                   \n email address: 19191600@students.latrobe.edu.au \
                   \n@2018")
 
@@ -404,22 +436,26 @@ def _exitGUI(event=None):
 
 
 #Adding open button
-actionOpen = tk.Button(app, text="Open Folder", bg = "peach puff", command = loadImage)
+actionOpen = tk.Button(app, text="Open Folder", 
+                       bg = "peach puff", command = loadImage)
 actionOpen.grid(column=0,row =1, sticky= tk.W)
 actionOpen.config(font= ("Tahoma",16))
 
 # #Adding next button
-# actionNext = tk.Button(app, text="Next Image", command=loadNextImage, bg = "peach puff")
+# actionNext = tk.Button(app, text="Next Image", 
+#                        command=loadNextImage, bg = "peach puff")
 # actionNext.grid(column =2 , row = 10, sticky=tk.W)
 # actionNext.config(font= ("Tahoma",16))
 
 #Adding prev button
-actionPrev = tk.Button(app, text="Previous Image", command = loadPrevImage, bg = "peach puff")
+actionPrev = tk.Button(app, text="Previous Image", 
+                       command = loadPrevImage, bg = "peach puff")
 actionPrev.grid(column=0,row =10,sticky=tk.E)
 actionPrev.config(font= ("Tahoma",16))
 
 #Adding save label button
-actionSaveLabel = tk.Button(app, text="Save Label", command =_saveMessage, bg = "peach puff")
+actionSaveLabel = tk.Button(app, text="Save Label", 
+                            command =_saveMessage, bg = "peach puff")
 actionSaveLabel.grid(column=2,row =10)
 actionSaveLabel.config(font= ("Tahoma",16))
 
@@ -427,41 +463,49 @@ actionSaveLabel.config(font= ("Tahoma",16))
 radioLabel = tk.IntVar()
 radioLabel.set(999)
 
-radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "1. Beer Cup", value = 1, command = saveLabel)
+radioLabel1 = tk.Radiobutton(app, variable = radioLabel, text = "1. Beer Cup", 
+                             value = 1, command = saveLabel)
 radioLabel1.grid(column=1, row = 5, sticky = tk.W)
 radioLabel1.config(font=("Tahoma",16))
 radioLabel1.configure(background = background)
 
-radioLabel2 = tk.Radiobutton(app, variable = radioLabel, text = "2. Beer Bottle", value = 2, command = saveLabel)
+radioLabel2 = tk.Radiobutton(app, variable = radioLabel, 
+                             text = "2. Beer Bottle", value = 2, 
+                             command = saveLabel)
 radioLabel2.grid(column=1, row = 6, sticky = tk.W)
 radioLabel2.config(font=("Tahoma",16))
 radioLabel2.configure(background = background)
 
-radioLabel3 = tk.Radiobutton(app, variable = radioLabel, text = "3. Beer Can", value = 3, command = saveLabel)
+radioLabel3 = tk.Radiobutton(app, variable = radioLabel, text = "3. Beer Can", 
+                             value = 3, command = saveLabel)
 radioLabel3.grid(column=1, row = 7, sticky = tk.W)
 radioLabel3.config(font=("Tahoma",16))
 radioLabel3.configure(background = background)
 
 
-radioLabel4 = tk.Radiobutton(app, variable = radioLabel, text = "4. Wine", value = 4, command = saveLabel)
+radioLabel4 = tk.Radiobutton(app, variable = radioLabel, text = "4. Wine", 
+                             value = 4, command = saveLabel)
 radioLabel4.grid(column=2, row = 5, sticky = tk.W)
 radioLabel4.config(font=("Tahoma",16))
 radioLabel4.configure(background = background)
 
 
-radioLabel5 = tk.Radiobutton(app, variable = radioLabel, text = "5. Champagne", value = 5, command = saveLabel)
+radioLabel5 = tk.Radiobutton(app, variable = radioLabel, text = "5. Champagne",
+                             value = 5, command = saveLabel)
 radioLabel5.grid(column=2, row = 6, sticky = tk.W)
 radioLabel5.config(font=("Tahoma",16))
 radioLabel5.configure(background = background)
 
 
-radioLabel6 = tk.Radiobutton(app, variable = radioLabel, text = "6. Undecided", value = 6, command = saveLabel)
+radioLabel6 = tk.Radiobutton(app, variable = radioLabel, text = "6. Undecided",
+                             value = 6, command = saveLabel)
 radioLabel6.grid(column=3, row = 5, sticky = tk.W)
 radioLabel6.config(font=("Tahoma",16))
 radioLabel6.configure(background = background)
 
 
-radioLabel7 = tk.Radiobutton(app, variable = radioLabel, text = "7. Other", value = 7, command = saveLabel)
+radioLabel7 = tk.Radiobutton(app, variable = radioLabel, text = "7. Other",
+                             value = 7, command = saveLabel)
 radioLabel7.grid(column=3, row = 6, sticky = tk.W)
 radioLabel7.config(font=("Tahoma",16))
 radioLabel7.configure(background = background)
@@ -469,7 +513,8 @@ radioLabel7.configure(background = background)
 # scrolHeight = 4
 # scrolWidth = 40
 
-# scroll = scrolledtext.ScrolledText(app, height = scrolHeight, width = scrolWidth, wrap = tk.WORD)
+# scroll = scrolledtext.ScrolledText(app, height = scrolHeight, 
+#                                    width = scrolWidth, wrap = tk.WORD)
 # scroll.grid(column = 0, row = 20, padx = 40, pady =60)
 
 #Creating a menu bar
