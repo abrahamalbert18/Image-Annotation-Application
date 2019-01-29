@@ -5,6 +5,7 @@ Created on Mon Dec 17 16:25:07 2018
 @author: Albert
 """
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv("./PreprocessedDataFiles/MergedPreprocessedDataFiles/MergedPreprocessedDrinkingDataLabels v2.csv")
 # originalDF = df
@@ -21,3 +22,4 @@ def indicesSplit(splitRatio):
 
 if __name__=="__main__":
     train, val, test = indicesSplit(splitRatio)
+    np.savez("./Splits/indicesSplits.npz", train = train, val = val, test = test)    
